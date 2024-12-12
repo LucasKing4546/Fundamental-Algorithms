@@ -49,3 +49,21 @@ class DepartmentsRepository:
         else:
             raise TypeError('Invalid department id')
 
+    def get_all_departments(self):
+        return self.__departments
+
+    def sorting_departments(self, condition):
+        if condition == "patient":
+            return sorted(self.__departments,
+                          key=lambda x: len(x.get_list_of_patients()))
+        elif condition == "id":
+            return sorted(self.__departments,
+                          key=lambda x: x.get_id())
+        elif condition == "name":
+            return sorted(self.__departments,
+                          key=lambda x: x.get_name())
+        elif condition == "beds":
+            return sorted(self.__departments,
+                          key=lambda x: x.get_number_of_beds())
+        else:
+            raise ValueError("Invalid condition")
