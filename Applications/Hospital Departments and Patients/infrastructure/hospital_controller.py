@@ -22,9 +22,8 @@ class HospitalController:
             department.set_list_of_patients([department.get_list_of_patients()
                                              for patient in department.get_list_of_patients()
                                              if patient.get_age() > age])
-        self.__department_repo = DepartmentsRepository(
-            self.__department_repo.sorting_departments("patient")
-        )
+
+        self.__department_repo.sorting_departments("patient")
 
         for i in range(len(self.__department_repo.get_all_departments())):
             department = department_repo_copy.get_department(i)
