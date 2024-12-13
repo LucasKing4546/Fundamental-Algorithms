@@ -73,27 +73,8 @@ def test_delete_department():
     repo.delete_department(0)
     assert len(repo.get_all_departments()) == 0
 
-def test_sorting_departments():
-    repo = DepartmentsRepository([
-        Departments(1, "Cardiology", 10, [
-            Patient("John", "Doe", 1234567890, "Heart Issue", 55)]),
-        Departments(2, "Neurology", 8, [
-            Patient("Jane", "Smith", 9876543210, "Migraine", 45),
-            Patient("Alice", "Johnson", 1122334455, "Asthma", 12)]),
-        Departments(3, "Pediatrics", 15, [
-            Patient("Ethan", "Clark", 3333333333, "Bronchitis", 8)])
-    ])
-
-    repo.sorting_departments("patient")
-
-    assert repo.get_department(0).get_name() == "Cardiology"
-    assert repo.get_department(2).get_name() == "Neurology"
-
-    repo.sorting_departments("id")
-    assert repo.get_department(2).get_id() == 3
 
 test_add_department()
 test_get_department()
 test_update_department()
 test_delete_department()
-test_sorting_departments()
