@@ -1,4 +1,5 @@
 from repository.hospital_repo import DepartmentsRepository
+from utilities.utility import *
 
 class HospitalController:
     def __init__(self, department_repo: 'DepartmentsRepository'):
@@ -13,6 +14,7 @@ class HospitalController:
         '''
         self.__department_repo = department_repo
 
+
     def sort_patients_by_pnc(self, index: int) -> None:
         '''
         Sorts the list of patients in a department by their personal numeric code (PNC).
@@ -24,8 +26,28 @@ class HospitalController:
         Updates the list of patients in the specified department, sorted by PNC.
         '''
         patient_list = self.__department_repo.get_department(index).get_list_of_patients()
-        patient_list.sort(key=lambda patient: patient.get_pnc())
+        sorting(patient_list, key=lambda patient: patient.get_pnc(), relation=lambda a, b: a > b)
         self.__department_repo.get_department(index).set_list_of_patients(patient_list)
+
+    def sort_by_number_of_patients_and_patients_alphabetically(self) -> None:
+        '''
+        Definition:
+        Sorts departments by the number of patients, and then sorts the patients in each department alphabetically by their first name.
+
+        Parameters:
+        None.
+
+        Result:
+        Departments in the repository are sorted by the number of patients, and each department's patient list is sorted alphabetically by first name.
+        '''
+        sorting(self.__department_repo.get_all_departments(),
+                key=lambda x: len(x.get_list_of_patients()),
+                relation=lambda a, b: a > b)
+        for department in self.__department_repo.get_all_departments():
+            sorting(department.get_list_of_patients(),
+                    key=lambda x: len(x.get_list_of_patients()),
+                    relation=lambda a, b: a > b
+                    )
 
     def sort_by_number_of_patients(self):
         '''
@@ -37,9 +59,9 @@ class HospitalController:
         Result:
         Updates the __department_repo with departments sorted by the number of patients.
         '''
-        self.__department_repo = DepartmentsRepository(
-            self.__department_repo.sorting_departments("patient")
-        )
+        sorting(self.__department_repo.get_all_departments(),
+                key=lambda x: len(x.get_list_of_patients()),
+                relation=lambda a, b: a > b)
 
     def sort_by_number_of_patient_over_an_age(self, age: int):
         '''
@@ -55,11 +77,13 @@ class HospitalController:
         department_repo_copy = self.__department_repo
 
         for department in self.__department_repo.get_all_departments():
-            department.set_list_of_patients([patient
-                                             for patient in department.get_list_of_patients()
-                                             if patient.get_age() > age])
+            department.set_list_of_patients(filtering(department.get_list_of_patients(),
+                                                      key = lambda patient: patient.get_age() > age))
 
-        self.__department_repo.sorting_departments("patient")
+        sorting(self.__department_repo.get_all_departments(),
+                key=lambda x: len(x.get_list_of_patients()),
+                relation=lambda a, b: a > b
+                )
 
         for i in range(len(self.__department_repo.get_all_departments())):
             department = department_repo_copy.get_department(i)
@@ -75,13 +99,11 @@ class HospitalController:
         Result:
         Returns a list of departments that have patients under the specified age.
         '''
-        departments = []
-        for department in self.__department_repo.get_all_departments():
-            if len([patient
-                    for patient in department.get_list_of_patients()
-                    if patient.get_age() < age]) != 0:
-                departments.append(department)
-        return departments
+        return filtering(self.__department_repo.get_all_departments(),
+                         key=lambda x: len(
+                             [y for y in x.get_list_of_patients()
+                             if y.get_age() < age]
+                         ) > 0)
 
     def get_departments_patient_first_name(self, first_name: str):
         '''
@@ -93,13 +115,11 @@ class HospitalController:
         Result:
         Returns a list of departments with patients having the specified first name.
         '''
-        departments = []
-        for department in self.__department_repo.get_all_departments():
-            if len([patient
-                    for patient in department.get_list_of_patients()
-                    if patient.get_first_name() == first_name]) != 0:
-                departments.append(department)
-        return departments
+        return filtering(self.__department_repo.get_all_departments(),
+                         key=lambda x: len(
+                             [y for y in x.get_list_of_patients()
+                              if y.get_first_name() == first_name]
+                         ) > 0)
 
     def get_patients_first_or_last_name(self, index: int, string: str):
         '''
@@ -112,10 +132,6 @@ class HospitalController:
         Result:
         Returns a list of patients whose first or last name contains the specified string.
         '''
-        department = self.__department_repo.get_department(index)
-        patients = [patient
-                    for patient in department.get_list_of_patients()
-                    if string in patient.get_last_name() or
-                    string in patient.get_first_name()
-                    ]
-        return patients
+        return filtering(self.__department_repo.get_department(index).get_list_of_patients(),
+                         key=lambda x: string in x.get_first_name() or string in x.get_last_name(),
+                         )
