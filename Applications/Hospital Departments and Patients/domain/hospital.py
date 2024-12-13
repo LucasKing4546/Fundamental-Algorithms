@@ -1,3 +1,5 @@
+from domain.patient import Patient
+
 class Departments:
     def __init__(self, id: int, name: str, number_of_beds: int, list_of_patients: list):
         if isinstance(id, int) and isinstance(name, str) and isinstance(number_of_beds, int) and isinstance(list_of_patients, list):
@@ -43,5 +45,3 @@ class Departments:
             self.__list_of_patients = list_of_patients
         else:
             raise ValueError("List of_patients must be a list")
-
-
