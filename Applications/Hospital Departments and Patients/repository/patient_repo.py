@@ -33,7 +33,6 @@ class PatientRepository:
         if isinstance(first_name, str) and isinstance(last_name, str) and isinstance(pnc, int) and isinstance(disease, str) and isinstance(age, int):
             self.__patients.append(Patient(first_name, last_name, pnc, disease, age))
         else:
-            # Raise specific errors for invalid input types.
             if not isinstance(first_name, str):
                 raise TypeError('First Name must be a string')
             elif not isinstance(last_name, str):
