@@ -112,23 +112,3 @@ class DepartmentsRepository:
         '''
         return self.__departments
 
-    def sorting_departments(self, condition):
-        '''
-        Sorts the departments based on a specified condition.
-
-        Parameters:
-        condition (str): The attribute to sort by ("patient", "id", "name", or "beds").
-
-        Result:
-        Updates the __departments list in sorted order based on the condition.
-        '''
-        if condition == "patient":
-            self.__departments.sort(key=lambda x: len(x.get_list_of_patients()))
-        elif condition == "id":
-            self.__departments.sort(key=lambda x: x.get_id())
-        elif condition == "name":
-            self.__departments.sort(key=lambda x: x.get_name())
-        elif condition == "beds":
-            self.__departments.sort(key=lambda x: x.get_number_of_beds())
-        else:
-            raise ValueError("Invalid condition")
