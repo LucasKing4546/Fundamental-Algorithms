@@ -184,4 +184,43 @@ class HospitalController:
         backtrack(k, [], 0, set(), departments, results, key=lambda x: x.get_id())
         return results
 
+    #CRUD operations
 
+    def add_department_controller(self, id: int, name: str, beds: int, patients: list['Patient']):
+        if isinstance(id, int) and isinstance(name, str) and isinstance(beds, int) and isinstance(patients, list):
+            self.__department_repo.add_department(id, name, beds, patients)
+        else:
+            if not isinstance(id, int):
+                raise TypeError('id must be an integer')
+            elif not isinstance(name, str):
+                raise TypeError('name must be a string')
+            elif not isinstance(beds, int):
+                raise TypeError('beds must be an integer')
+            elif not isinstance(patients, list):
+                raise TypeError('patients must be a list')
+
+    def get_department_controller(self, department_id: int):
+        if isinstance(department_id, int) and 0 <= department_id < len(self.__department_repo.get_all_departments()):
+            self.__department_repo.get_department(department_id)
+        else:
+            raise TypeError('department_id must be an integer')
+
+    def update_department_controller(self, department_id: int, name: str, beds: int, patients: list['Patient']):
+        if isinstance(department_id, int) and 0 <= department_id < len(self.__department_repo.get_all_departments()):
+            if isinstance(name, str) and isinstance(beds, int) and isinstance(patients, list):
+                self.__department_repo.update_department(department_id, name, beds, patients)
+            else:
+                if not isinstance(name, str):
+                    raise TypeError('name must be a string')
+                elif not isinstance(beds, int):
+                    raise TypeError('beds must be an integer')
+                elif not isinstance(patients, list):
+                    raise TypeError('patients must be a list')
+        else:
+            raise TypeError('Invalid department id')
+
+    def delete_department_controller(self, department_id: int):
+        if isinstance(department_id, int) and 0 <= department_id < len(self.__department_repo.get_all_departments()):
+            self.__department_repo.delete_department(department_id)
+        else:
+            raise TypeError('Invalid department id')
