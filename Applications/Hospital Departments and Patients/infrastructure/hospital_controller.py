@@ -135,3 +135,53 @@ class HospitalController:
         return filtering(self.__department_repo.get_department(index).get_list_of_patients(),
                          key=lambda x: string in x.get_first_name() or string in x.get_last_name(),
                          )
+
+    def form_group_of_patients(self, k: int):
+        '''
+        Definition:
+        Forms groups of 𝒌𝒌 patients from the same department and the same disease.
+
+        Parameters:
+        k (int): The size of the groups to form.
+
+        Result:
+        Returns a list of grouped patients, where each group has exactly `k` patients with the same disease.
+        '''
+        result_list = []
+        for department in self.__department_repo.get_all_departments():
+            diseases = different_diseases(department)
+            for disease in diseases:
+                patients = [x for x in department.get_list_of_patients() if x.get_disease() == disease]
+                results = []
+                backtrack(k, [], 0, set(), patients, results, key=lambda x: x.get_pnc())
+                result_list.append(results)
+        return result_list
+
+    def form_group_of_departments(self, k: int, p: int):
+        '''
+        Definition:
+        Forms groups of 𝒌𝒌 departments having at most 𝒑𝒑 patients suffering from the same disease.
+
+        Parameters:
+        k (int): The size of the groups to form.
+        p (int): The maximum allowed number of patients with a single disease in a department.
+
+        Result:
+        Returns a list of grouped departments that meet the condition.
+        '''
+        departments = []
+        results = []
+        for department in self.__department_repo.get_all_departments():
+            diseases = different_diseases(department)
+            ok = 0
+            for disease in diseases:
+                patients = [x for x in department.get_list_of_patients() if x.get_disease() == disease]
+                if len(patients) > p:
+                    ok = 1
+                    break
+            if ok == 0:
+                departments.append(department)
+        backtrack(k, [], 0, set(), departments, results, key=lambda x: x.get_id())
+        return results
+
+
