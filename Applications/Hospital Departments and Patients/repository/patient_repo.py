@@ -1,3 +1,4 @@
+
 from domain.patient import Patient
 
 class PatientRepository:
@@ -30,19 +31,7 @@ class PatientRepository:
         Result:
         Appends a new Patient instance to the __patients list.
         '''
-        if isinstance(first_name, str) and isinstance(last_name, str) and isinstance(pnc, int) and isinstance(disease, str) and isinstance(age, int):
-            self.__patients.append(Patient(first_name, last_name, pnc, disease, age))
-        else:
-            if not isinstance(first_name, str):
-                raise TypeError('First Name must be a string')
-            elif not isinstance(last_name, str):
-                raise TypeError('Last Name must be a string')
-            elif not isinstance(pnc, int):
-                raise TypeError('Patient Number must be an integer')
-            elif not isinstance(disease, str):
-                raise TypeError('Disease must be a string')
-            elif not isinstance(age, int):
-                raise TypeError('Age must be an integer')
+        self.__patients.append(Patient(first_name, last_name, pnc, disease, age))
 
     def get_patient(self, patient_id: int) -> Patient:
         '''
@@ -54,10 +43,7 @@ class PatientRepository:
         Result:
         Returns the Patient object corresponding to the given ID.
         '''
-        if isinstance(patient_id, int) and 0 <= patient_id < len(self.__patients):
-            return self.__patients[patient_id]
-        else:
-            raise TypeError('Invalid patient id')
+        return self.__patients[patient_id]
 
     def update_patient(self, patient_id: int, first_name: str, last_name: str, pnc: int, disease: str, age: int):
         '''
@@ -75,26 +61,11 @@ class PatientRepository:
         Updates the specified patient's details.
         '''
         if isinstance(patient_id, int) and 0 <= patient_id < len(self.__patients):
-            if isinstance(first_name, str) and isinstance(last_name, str) and isinstance(pnc, int) and isinstance(disease, str) and isinstance(age, int):
-                self.__patients[patient_id].set_first_name(first_name)
-                self.__patients[patient_id].set_last_name(last_name)
-                self.__patients[patient_id].set_pnc(pnc)
-                self.__patients[patient_id].set_disease(disease)
-                self.__patients[patient_id].set_age(age)
-            else:
-                # Raise specific errors for invalid input types.
-                if not isinstance(first_name, str):
-                    raise TypeError('First Name must be a string')
-                elif not isinstance(last_name, str):
-                    raise TypeError('Last Name must be a string')
-                elif not isinstance(pnc, int):
-                    raise TypeError('Patient Number must be an integer')
-                elif not isinstance(disease, str):
-                    raise TypeError('Disease must be a string')
-                elif not isinstance(age, int):
-                    raise TypeError('Age must be an integer')
-        else:
-            raise TypeError('Invalid patient id')
+            self.__patients[patient_id].set_first_name(first_name)
+            self.__patients[patient_id].set_last_name(last_name)
+            self.__patients[patient_id].set_pnc(pnc)
+            self.__patients[patient_id].set_disease(disease)
+            self.__patients[patient_id].set_age(age)
 
     def delete_patient(self, patient_id: int):
         '''
@@ -106,7 +77,7 @@ class PatientRepository:
         Result:
         Removes the patient from the __patients list.
         '''
-        if isinstance(patient_id, int) and 0 <= patient_id < len(self.__patients):
-            self.__patients.pop(patient_id)
-        else:
-            raise TypeError('Invalid patient id')
+        self.__patients.pop(patient_id)
+
+    def get_all_patients(self):
+        return self.__patients
