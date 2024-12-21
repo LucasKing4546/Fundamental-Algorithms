@@ -1,5 +1,5 @@
 from domain.hospital import Departments
-from domain.patient import Patient
+from repository.patient_repo import PatientRepository
 
 class DepartmentsRepository:
     def __init__(self, departments: list['Departments']|None):
@@ -17,7 +17,7 @@ class DepartmentsRepository:
         else:
             self.__departments = departments
 
-    def add_department(self, id: int, name: str, beds: int, patients: list['Patient']):
+    def add_department(self, id: int, name: str, beds: int, patients: PatientRepository):
         '''
         Adds a new department to the repository.
 
@@ -42,9 +42,12 @@ class DepartmentsRepository:
         Result:
         Returns the Departments object corresponding to the given ID.
         '''
-        return self.__departments[department_id]
+        for department in self.__departments:
+            if department.get_id() == department_id:
+                return department
+        return None
 
-    def update_department(self, department_id: int, name: str, beds: int, patients: list['Patient']):
+    def update_department(self, department_id: int, name: str, beds: int, patients: PatientRepository):
         '''
         Updates an existing department's information.
 
@@ -57,9 +60,9 @@ class DepartmentsRepository:
         Result:
         Updates the specified department's details.
         '''
-        self.__departments[department_id].set_name(name)
-        self.__departments[department_id].set_number_of_beds(beds)
-        self.__departments[department_id].set_list_of_patients(patients)
+        self.get_department(department_id).set_name(name)
+        self.get_department(department_id).set_number_of_beds(beds)
+        self.get_department(department_id).set_list_of_patients(patients)
 
     def delete_department(self, department_id: int):
         '''
@@ -71,7 +74,9 @@ class DepartmentsRepository:
         Result:
         Removes the department from the __departments list.
         '''
-        self.__departments.pop(department_id)
+        for department in self.__departments:
+            if department.get_id() == department_id:
+                self.__departments.remove(department)
 
     def get_all_departments(self):
         '''
@@ -84,4 +89,5 @@ class DepartmentsRepository:
         Returns the list of all Departments objects.
         '''
         return self.__departments
+
 

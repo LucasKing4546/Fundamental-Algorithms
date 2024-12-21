@@ -1,4 +1,5 @@
 from repository.hospital_repo import DepartmentsRepository
+from repository.patient_repo import PatientRepository
 from utilities.utility import *
 
 class HospitalController:
@@ -25,9 +26,11 @@ class HospitalController:
         Result:
         Updates the list of patients in the specified department, sorted by PNC.
         '''
-        patient_list = self.__department_repo.get_department(index).get_list_of_patients()
+        patient_repo = self.__department_repo.get_department(index).get_list_of_patients()
+        patient_list = patient_repo.get_all_patients()
         sorting(patient_list, key=lambda patient: patient.get_pnc(), relation=lambda a, b: a > b)
-        self.__department_repo.get_department(index).set_list_of_patients(patient_list)
+        patient_repo = PatientRepository(patient_list)
+        self.__department_repo.get_department(index).set_list_of_patients(patient_repo)
 
     def sort_by_number_of_patients_and_patients_alphabetically(self) -> None:
         '''
@@ -41,13 +44,10 @@ class HospitalController:
         Departments in the repository are sorted by the number of patients, and each department's patient list is sorted alphabetically by first name.
         '''
         sorting(self.__department_repo.get_all_departments(),
-                key=lambda x: len(x.get_list_of_patients()),
+                key=lambda x: len(x.get_list_of_patients().get_all_patients()),
                 relation=lambda a, b: a > b)
         for department in self.__department_repo.get_all_departments():
-            sorting(department.get_list_of_patients(),
-                    key=lambda x: len(x.get_list_of_patients()),
-                    relation=lambda a, b: a > b
-                    )
+            department.sort_by_number_of_patients()
 
     def sort_by_number_of_patients(self):
         '''
@@ -60,7 +60,7 @@ class HospitalController:
         Updates the __department_repo with departments sorted by the number of patients.
         '''
         sorting(self.__department_repo.get_all_departments(),
-                key=lambda x: len(x.get_list_of_patients()),
+                key=lambda x: len(x.get_list_of_patients().get_all_patients()),
                 relation=lambda a, b: a > b)
 
     def sort_by_number_of_patient_over_an_age(self, age: int):
@@ -77,15 +77,16 @@ class HospitalController:
         department_repo_copy = self.__department_repo
 
         for department in self.__department_repo.get_all_departments():
-            department.set_list_of_patients(filtering(department.get_list_of_patients(),
-                                                      key = lambda patient: patient.get_age() > age))
+            department.set_list_of_patients(PatientRepository(filtering(department.get_list_of_patients().get_all_patients(),
+                                                      key = lambda patient: patient.get_age() > age)))
 
         sorting(self.__department_repo.get_all_departments(),
-                key=lambda x: len(x.get_list_of_patients()),
+                key=lambda x: len(x.get_list_of_patients().get_all_patients()),
                 relation=lambda a, b: a > b
                 )
 
-        for i in range(len(self.__department_repo.get_all_departments())):
+        for dep in self.__department_repo.get_all_departments():
+            i = dep.get_id()
             department = department_repo_copy.get_department(i)
             self.__department_repo.get_department(i).set_list_of_patients(department.get_list_of_patients())
 
@@ -101,7 +102,7 @@ class HospitalController:
         '''
         return filtering(self.__department_repo.get_all_departments(),
                          key=lambda x: len(
-                             [y for y in x.get_list_of_patients()
+                             [y for y in x.get_list_of_patients().get_all_patients()
                              if y.get_age() < age]
                          ) > 0)
 
@@ -117,7 +118,7 @@ class HospitalController:
         '''
         return filtering(self.__department_repo.get_all_departments(),
                          key=lambda x: len(
-                             [y for y in x.get_list_of_patients()
+                             [y for y in x.get_list_of_patients().get_all_patients()
                               if y.get_first_name() == first_name]
                          ) > 0)
 
@@ -132,7 +133,7 @@ class HospitalController:
         Result:
         Returns a list of patients whose first or last name contains the specified string.
         '''
-        return filtering(self.__department_repo.get_department(index).get_list_of_patients(),
+        return filtering(self.__department_repo.get_department(index).get_list_of_patients().get_all_patients(),
                          key=lambda x: string in x.get_first_name() or string in x.get_last_name(),
                          )
 
@@ -151,10 +152,11 @@ class HospitalController:
         for department in self.__department_repo.get_all_departments():
             diseases = different_diseases(department)
             for disease in diseases:
-                patients = [x for x in department.get_list_of_patients() if x.get_disease() == disease]
+                patients = [x for x in department.get_list_of_patients().get_all_patients() if x.get_disease() == disease]
                 results = []
                 backtrack(k, [], 0, set(), patients, results, key=lambda x: x.get_pnc())
-                result_list.append(results)
+                if len(results) > 0:\
+                    result_list.append(results)
         return result_list
 
     def form_group_of_departments(self, k: int, p: int):
@@ -175,7 +177,7 @@ class HospitalController:
             diseases = different_diseases(department)
             ok = 0
             for disease in diseases:
-                patients = [x for x in department.get_list_of_patients() if x.get_disease() == disease]
+                patients = [x for x in department.get_list_of_patients().get_all_patients() if x.get_disease() == disease]
                 if len(patients) > p:
                     ok = 1
                     break
@@ -186,8 +188,8 @@ class HospitalController:
 
     #CRUD operations
 
-    def add_department_controller(self, id: int, name: str, beds: int, patients: list['Patient']):
-        if isinstance(id, int) and isinstance(name, str) and isinstance(beds, int) and isinstance(patients, list):
+    def add_department_controller(self, id: int, name: str, beds: int, patients: PatientRepository):
+        if isinstance(id, int) and id not in [x.get_id() for x in self.__department_repo.get_all_departments()] and isinstance(name, str) and isinstance(beds, int) and isinstance(patients, PatientRepository):
             self.__department_repo.add_department(id, name, beds, patients)
         else:
             if not isinstance(id, int):
@@ -197,17 +199,17 @@ class HospitalController:
             elif not isinstance(beds, int):
                 raise TypeError('beds must be an integer')
             elif not isinstance(patients, list):
-                raise TypeError('patients must be a list')
+                raise TypeError('patients must be a PatientRepository')
 
     def get_department_controller(self, department_id: int):
-        if isinstance(department_id, int) and 0 <= department_id < len(self.__department_repo.get_all_departments()):
-            self.__department_repo.get_department(department_id)
+        if isinstance(department_id, int):
+            return self.__department_repo.get_department(department_id)
         else:
             raise TypeError('department_id must be an integer')
 
-    def update_department_controller(self, department_id: int, name: str, beds: int, patients: list['Patient']):
-        if isinstance(department_id, int) and 0 <= department_id < len(self.__department_repo.get_all_departments()):
-            if isinstance(name, str) and isinstance(beds, int) and isinstance(patients, list):
+    def update_department_controller(self, department_id: int, name: str, beds: int, patients: PatientRepository):
+        if isinstance(department_id, int):
+            if isinstance(name, str) and isinstance(beds, int) and isinstance(patients, PatientRepository):
                 self.__department_repo.update_department(department_id, name, beds, patients)
             else:
                 if not isinstance(name, str):
@@ -215,12 +217,15 @@ class HospitalController:
                 elif not isinstance(beds, int):
                     raise TypeError('beds must be an integer')
                 elif not isinstance(patients, list):
-                    raise TypeError('patients must be a list')
+                    raise TypeError('patients must be a PatientRepository')
         else:
             raise TypeError('Invalid department id')
 
     def delete_department_controller(self, department_id: int):
-        if isinstance(department_id, int) and 0 <= department_id < len(self.__department_repo.get_all_departments()):
+        if isinstance(department_id, int):
             self.__department_repo.delete_department(department_id)
         else:
             raise TypeError('Invalid department id')
+
+    def get_all_departments_controller(self):
+        return self.__department_repo.get_all_departments()

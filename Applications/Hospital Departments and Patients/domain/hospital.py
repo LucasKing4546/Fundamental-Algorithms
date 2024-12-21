@@ -1,8 +1,8 @@
-from domain.patient import Patient
+from repository.patient_repo import PatientRepository
 
 class Departments:
-    def __init__(self, id: int, name: str, number_of_beds: int, list_of_patients: list):
-        if isinstance(id, int) and isinstance(name, str) and isinstance(number_of_beds, int) and isinstance(list_of_patients, list):
+    def __init__(self, id: int, name: str, number_of_beds: int, list_of_patients: PatientRepository):
+        if isinstance(id, int) and isinstance(name, str) and isinstance(number_of_beds, int) and isinstance(list_of_patients, PatientRepository):
             self.__id = id
             self.__name = name
             self.__number_of_beds = number_of_beds
@@ -41,7 +41,10 @@ class Departments:
             raise ValueError("Number of beds must be a positive integer")
 
     def set_list_of_patients(self, list_of_patients):
-        if isinstance(list_of_patients, list):
+        if isinstance(list_of_patients, PatientRepository):
             self.__list_of_patients = list_of_patients
         else:
             raise ValueError("List of_patients must be a list")
+
+    def __repr__(self):
+        return f"Department: {self.__id}, Name: {self.__name}, Number of Beds: {self.__number_of_beds}, List Patients: \n{self.__list_of_patients}\n"
