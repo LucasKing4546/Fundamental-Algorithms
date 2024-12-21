@@ -81,3 +81,6 @@ class PatientRepository:
 
     def get_all_patients(self):
         return self.__patients
+
+    def __repr__(self):
+        return f"{self.__patients}\n"
