@@ -93,15 +93,17 @@ def test_set_age():
     patient3.set_age(10)
     assert patient3.get_age() == 10
 
+if __name__ == "__main__":
+    test_get_age()
+    test_set_age()
+    test_get_pnc()
+    test_set_pnc()
+    test_get_disease()
+    test_set_disease()
+    test_get_first_name()
+    test_set_first_name()
+    test_get_last_name()
+    test_set_last_name()
+    print("All tests passed")
 
-test_get_age()
-test_set_age()
-test_get_pnc()
-test_set_pnc()
-test_get_disease()
-test_set_disease()
-test_get_first_name()
-test_set_first_name()
-test_get_last_name()
-test_set_last_name()
 

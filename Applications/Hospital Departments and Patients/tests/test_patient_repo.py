@@ -55,8 +55,9 @@ def test_delete_patient():
     repo.delete_patient(0)
     assert repo.get_patient(0).get_first_name() == "Alice"
 
-
-test_add_patient()
-test_get_patient()
-test_update_patient()
-test_delete_patient()
+if __name__ == "__main__":
+    test_add_patient()
+    test_get_patient()
+    test_update_patient()
+    test_delete_patient()
+    print("All tests passed")
