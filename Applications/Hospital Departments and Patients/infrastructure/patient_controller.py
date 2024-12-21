@@ -21,8 +21,8 @@ class PatientController:
                 raise TypeError('Age must be an integer')
 
     def get_patient_controller(self, patient_id: int):
-        if isinstance(patient_id, int) and 0 <= patient_id < len(self.__patient_repo.get_all_patients()):
-            self.__patient_repo.get_patient(patient_id)
+        if isinstance(patient_id, int):
+            return self.__patient_repo.get_patient(patient_id)
         else:
             raise TypeError('Invalid patient id')
 
@@ -45,7 +45,7 @@ class PatientController:
                 raise TypeError('Invalid patient id')
 
     def delete_patient_controller(self, patient_id: int):
-        if isinstance(patient_id, int) and 0 <= patient_id < len(self.__patient_repo.get_all_patients()):
+        if isinstance(patient_id, int):
             self.__patient_repo.delete_patient(patient_id)
         else:
             raise TypeError('Invalid patient id')
