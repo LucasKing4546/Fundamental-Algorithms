@@ -25,7 +25,7 @@ def backtrack(k: int, current_group: list[Patient|Departments], start: int, set_
 
 def different_diseases(department: Departments):
     diseases = set()
-    for patient in department.get_list_of_patients():
+    for patient in department.get_list_of_patients().get_all_patients():
         diseases.add(patient.get_disease())
     return diseases
 
