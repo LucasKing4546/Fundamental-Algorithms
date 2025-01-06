@@ -168,10 +168,16 @@ def main():
             elif choice == "17":
                 department_id = int(input("Enter Department ID: "))
                 department_patients = hospital_controller.get_department_controller(department_id).get_list_of_patients().get_all_patients()
-                print(department_patients)
+                if len(department_patients) > 0:
+                    print(department_patients)
+                else:
+                    print("No patients found!")
 
             elif choice == "18":
-                print(hospital_controller.get_all_departments_controller())
+                if len(hospital_controller.get_all_departments_controller()) > 0:
+                    print(hospital_controller.get_all_departments_controller())
+                else:
+                    print("No departments found!")
 
             elif choice == "19":
                 print("Exiting... Goodbye!")
