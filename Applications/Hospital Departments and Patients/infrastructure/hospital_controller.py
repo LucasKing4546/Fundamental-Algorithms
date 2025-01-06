@@ -47,7 +47,9 @@ class HospitalController:
                 key=lambda x: len(x.get_list_of_patients().get_all_patients()),
                 relation=lambda a, b: a > b)
         for department in self.__department_repo.get_all_departments():
-            department.sort_by_number_of_patients()
+            sorting(department.get_list_of_patients().get_all_patients(),
+                    key = lambda x: x.get_first_name(),
+                    relation = lambda a, b: a > b)
 
     def sort_by_number_of_patients(self):
         '''
