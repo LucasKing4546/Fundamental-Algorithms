@@ -50,6 +50,28 @@ def test_sort_by_number_of_patients():
     assert departments[1].get_name() == "Pediatrics"
     assert departments[2].get_name() == "Neurology"
 
+def test_sort_by_number_of_patients_and_patients_alphabetically():
+    repo = DepartmentsRepository([
+        Departments(1, "Cardiology", 10, PatientRepository([
+            Patient("John", "Doe", 1234567890, "Heart Issue", 55)
+        ])),
+        Departments(2, "Neurology", 8, PatientRepository([
+            Patient("Zane", "Taylor", 6677889900, "Headache", 35),
+            Patient("Jane", "Smith", 9876543210, "Migraine", 45)
+
+        ])),
+        Departments(3, "Pediatrics", 15, PatientRepository([
+            Patient("Ethan", "Clark", 3333333333, "Bronchitis", 8)
+        ]))
+    ])
+    controller = HospitalController(repo)
+    controller.sort_by_number_of_patients_and_patients_alphabetically()
+    departments = repo.get_all_departments()
+
+    assert departments[0].get_name() == "Cardiology"
+    assert departments[1].get_name() == "Pediatrics"
+    assert departments[2].get_list_of_patients().get_patient(0).get_first_name() == "Jane"
+
 def test_sort_by_number_of_patient_over_an_age():
     repo = DepartmentsRepository([
         Departments(1, "Cardiology", 10, PatientRepository([
@@ -185,6 +207,7 @@ def test_form_group_of_departments():
 if __name__ == '__main__':
     test_sort_patients_by_pnc()
     test_sort_by_number_of_patients()
+    test_sort_by_number_of_patients_and_patients_alphabetically()
     test_sort_by_number_of_patient_over_an_age()
     test_get_departments_patients_under_an_age()
     test_get_departments_patient_first_name()
