@@ -157,7 +157,7 @@ class HospitalController:
                 patients = [x for x in department.get_list_of_patients().get_all_patients() if x.get_disease() == disease]
                 results = []
                 backtrack(k, [], 0, set(), patients, results, key=lambda x: x.get_pnc())
-                if len(results) > 0:\
+                if len(results) > 0:
                     result_list.append(results)
         return result_list
 
